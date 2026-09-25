@@ -62,13 +62,14 @@ jobs:
             exit 1
           fi
           cp "$APK_SRC" Xiaojiucai1.0.0.apk
-          ls -lh Xiaojiucai1.0.0.apk
+          cp "$APK_SRC" Xiaojiucai.apk
+          ls -lh Xiaojiucai*.apk
 
       - name: Commit and Push APK
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add Xiaojiucai1.0.0.apk
+          git add Xiaojiucai1.0.0.apk Xiaojiucai.apk
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else

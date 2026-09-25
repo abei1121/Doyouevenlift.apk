@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new InnerWebViewClient());
+        webView.addJavascriptInterface(new AndroidShareBridge(this), "AndroidBridge");
     }
 
     private void setupBackNavigation() {
