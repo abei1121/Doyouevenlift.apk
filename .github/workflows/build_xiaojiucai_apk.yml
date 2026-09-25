@@ -32,32 +32,33 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
+          cache-disabled: true
 
       - name: Generate Release Keystore
         working-directory: xiaojiucai_app
         run: |
-          if [ ! -f "app/release.keystore" ]; then
-            echo "Generating release keystore..."
-            keytool -genkey -v \
-              -keystore app/release.keystore \
-              -alias xiaojiucai \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -storepass xiaojiucai \
-              -keypass xiaojiucai \
-              -dname "CN=XiaoJiuCai, OU=Club, O=XiaoJiuCai, L=HK, ST=HK, C=CN"
-          fi
+          mkdir -p app
+          keytool -genkeypair -v \
+            -keystore app/release.keystore \
+            -alias xiaojiucai \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass xiaojiucai \
+            -keypass xiaojiucai \
+            -dname "CN=XiaoJiuCai, OU=Club, O=XiaoJiuCai, L=HK, ST=HK, C=CN"
+          ls -la app/release.keystore
 
       - name: Build Release APK
         working-directory: xiaojiucai_app
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: gradle assembleRelease --no-daemon --info
 
       - name: Stage APK to Root for jsDelivr CDN
         run: |
           APK_SRC="xiaojiucai_app/app/build/outputs/apk/release/app-release.apk"
           if [ ! -f "$APK_SRC" ]; then
-            echo "Error: $APK_SRC not found!"
+            echo "Error: $APK_SRC not found! Searching for any generated apk..."
+            find xiaojiucai_app -name "*.apk"
             exit 1
           fi
           cp "$APK_SRC" Xiaojiucai1.0.0.apk
